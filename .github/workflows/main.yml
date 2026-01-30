@@ -11,17 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Installer MSBuild et configurer l'environnement
-      - name: Setup MSVC
-        uses: microsoft/setup-msbuild@v1
+      - name: Install MinGW
+        shell: powershell
+        run: |
+          choco install mingw -y
+          refreshenv
 
-      # Compiler le code WinAPI
-      - name: Compile EXE
+      - name: Compile EXE with MinGW
         shell: cmd
         run: |
-          cl /EHsc main.cpp user32.lib gdi32.lib /Fe:rectangle.exe /MT
+          "C:\Program Files\mingw-w64\x86_64-10.3.0-posix-seh-rt_v10-rev0\mingw64\bin\g++.exe" main.cpp -mwindows -static -o rectangle.exe
 
-      # Upload de l'exécutable
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
