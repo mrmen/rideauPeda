@@ -36,24 +36,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             PostQuitMessage(0);
             break;
     }
-    return DefWindowProcW(hwnd, msg, wParam, lParam);
+    return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 {
-    WNDCLASSW wc = {};
+    WNDCLASS wc = {};
     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
-    wc.lpszClassName = L"RectanglePedagogique";
+    wc.lpszClassName = "RectanglePedagogique";
     wc.hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
 
-    RegisterClassW(&wc);
+    RegisterClass(&wc);
 
-    HWND hwnd = CreateWindowExW(
+    HWND hwnd = CreateWindowEx(
         0,
         wc.lpszClassName,
-        L"Rectangle pédagogique", // <- Wide string avec accents
-        WS_POPUP | WS_THICKFRAME,
+        "Rectangle pedagogique", // <- sans accent
+        WS_POPUP | WS_THICKFRAME, // garde le redimensionnement
         300, 200, 420, 300,
         nullptr, nullptr, hInstance, nullptr
     );
@@ -61,10 +61,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPWSTR, int)
     ShowWindow(hwnd, SW_SHOW);
 
     MSG msg;
-    while (GetMessageW(&msg, nullptr, 0, 0))
+    while (GetMessage(&msg, nullptr, 0, 0))
     {
         TranslateMessage(&msg);
-        DispatchMessageW(&msg);
+        DispatchMessage(&msg);
     }
     return 0;
 }
