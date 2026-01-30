@@ -1,8 +1,11 @@
-name: Build Windows EXE
+name: Build and Release
 
 on:
   push:
     branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -17,26 +20,14 @@ jobs:
           choco install mingw -y
           refreshenv
 
-      - name: Compile EXE with MinGW
+      - name: Compile EXE
         shell: cmd
-        run: |
-          g++ main.cpp -mwindows -static -o rectangle.exe
+        run: g++ main.cpp -mwindows -static -o rectangle.exe
 
-      - name: Upload EXE
-        uses: actions/upload-artifact@v4
-        with:
-          name: rectangle
-          path: rectangle.exe
-
-      - name: Create Release
-        id: create_release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: v0.1
-    
-      - name: Upload Release Asset
+      - name: Create Release and Upload EXE
         uses: ncipollo/release-action@v1
         with:
           tag: v0.1
           name: rectangle.exe
           path: rectangle.exe
+          generateReleaseNotes: false
