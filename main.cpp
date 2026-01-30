@@ -8,6 +8,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
+        // 🔥 SUPPRESSION TOTALE DU NON-CLIENT AREA
+        case WM_NCCALCSIZE:
+            if (wParam)
+                return 0;
+
         case WM_NCHITTEST:
         {
             POINT pt = {
@@ -25,10 +30,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             if (pt.y > rc.bottom - BORDER && pt.x < BORDER) return HTBOTTOMLEFT;
             if (pt.y > rc.bottom - BORDER && pt.x > rc.right - BORDER) return HTBOTTOMRIGHT;
 
-            // Bord haut (resize vertical)
+            // Bord haut
             if (pt.y < TOP_RESIZE) return HTTOP;
 
-            // Déplacement depuis le centre
+            // Déplacement
             return HTCAPTION;
         }
 
@@ -44,8 +49,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
     WNDCLASS wc = {};
     wc.lpfnWndProc = WndProc;
     wc.hInstance = hInstance;
-    wc.lpszClassName = "BlackRectangle";
-    wc.hbrBackground = CreateSolidBrush(RGB(0,0,0));
+    wc.lpszClassName = "PureBlackRect";
+    wc.hbrBackground = CreateSolidBrush(RGB(0, 0, 0));
 
     RegisterClass(&wc);
 
@@ -53,8 +58,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
         0,
         wc.lpszClassName,
         "",
-        WS_POPUP | WS_THICKFRAME,
-        300, 200, 400, 300,
+        WS_POPUP | WS_THICKFRAME, // resize conservé
+        300, 200, 420, 300,
         nullptr, nullptr, hInstance, nullptr
     );
 
