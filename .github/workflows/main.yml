@@ -20,7 +20,7 @@ jobs:
       - name: Compile EXE with MinGW
         shell: cmd
         run: |
-          "C:\Program Files\mingw-w64\x86_64-10.3.0-posix-seh-rt_v10-rev0\mingw64\bin\g++.exe" main.cpp -mwindows -static -o rectangle.exe
+          g++ main.cpp -mwindows -static -o rectangle.exe
 
       - name: Upload EXE
         uses: actions/upload-artifact@v4
