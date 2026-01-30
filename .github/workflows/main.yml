@@ -22,12 +22,12 @@ jobs:
 
       - name: Compile EXE
         shell: cmd
-        run: g++ main.cpp -mwindows -static -o rectangle.exe
+        run: |
+          g++ main.cpp -mwindows -static -o rectangle.exe
 
       - name: Create Release and Upload EXE
         uses: ncipollo/release-action@v1
         with:
-          tag: v0.1
-          name: rectangle.exe
-          path: rectangle.exe
+          tag: v0.1-${{ github.run_number }}  # tag unique
           generateReleaseNotes: false
+          artifacts: rectangle.exe             # upload correct
