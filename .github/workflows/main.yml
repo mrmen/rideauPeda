@@ -23,7 +23,7 @@ jobs:
       - name: Compile EXE
         shell: cmd
         run: |
-          g++ main.cpp -mwindows -static -o rectangle.exe
+          g++ rectangle.cpp -mwindows -static -o rectangle.exe
           g++ spotlight.cpp -mwindows -static -o spotlight.exe
 
       - name: Create Release and Upload EXE
