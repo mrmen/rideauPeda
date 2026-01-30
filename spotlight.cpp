@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <windowsx.h>
 
-#define CORNER 30
+#define CORNER 14
 
 RECT hole = { 400, 300, 800, 600 };
 POINT last;
@@ -72,10 +72,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             else if (InCornerTR(x, y)) mode = RESIZE_TR;
             else if (InCornerBL(x, y)) mode = RESIZE_BL;
             else if (InCornerBR(x, y)) mode = RESIZE_BR;
-            else if ((GetKeyState(VK_CONTROL) & 0x8000) && InHole(x, y))
-                mode = MOVE;
-            else
-                mode = NONE;
+            else if (InHole(x, y))     mode = MOVE;
+            else                       mode = NONE;
 
             if (mode != NONE)
             {
