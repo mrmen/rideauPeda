@@ -32,6 +32,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             return HTCAPTION;
         }
 
+        case WM_KEYDOWN:
+            if (wParam == VK_ESCAPE)
+                PostQuitMessage(0);
+            break;
+
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
@@ -52,7 +57,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
     HWND hwnd = CreateWindowEx(
         0,
         wc.lpszClassName,
-        "Rectangle pédagogique",   // ← Titre visible dans la barre des tâches
+        "Rectangle pédagogique",   // Titre visible dans la barre des tâches
         WS_POPUP | WS_THICKFRAME,
         300, 200, 400, 300,
         nullptr, nullptr, hInstance, nullptr
