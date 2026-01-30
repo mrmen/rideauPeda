@@ -27,3 +27,16 @@ jobs:
         with:
           name: rectangle
           path: rectangle.exe
+
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v0.1
+    
+      - name: Upload Release Asset
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v0.1
+          name: rectangle.exe
+          path: rectangle.exe
