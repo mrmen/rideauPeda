@@ -11,11 +11,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Compile WinAPI EXE
-        run: cl main.cpp user32.lib gdi32.lib
+      # Installer MSBuild et configurer l'environnement
+      - name: Setup MSVC
+        uses: microsoft/setup-msbuild@v1
 
+      # Compiler le code WinAPI
+      - name: Compile EXE
+        shell: cmd
+        run: |
+          cl /EHsc main.cpp user32.lib gdi32.lib /Fe:rectangle.exe /MT
+
+      # Upload de l'exécutable
       - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: rectangle-exe
-          path: main.exe
+          name: rectangle
+          path: rectangle.exe
