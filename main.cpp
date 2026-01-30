@@ -1,8 +1,8 @@
 #include <windows.h>
 #include <windowsx.h>
 
-#define BORDER 8
-#define TOP_RESIZE 10
+#define BORDER 30
+#define TOP_RESIZE 30
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
