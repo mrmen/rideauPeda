@@ -1,14 +1,16 @@
 #include <windows.h>
 #include <windowsx.h>
 
-#define BORDER 10
+#define CORNER 30
 
 RECT hole = { 400, 300, 800, 600 };
 POINT last;
 bool dragging = false;
 
-enum Mode { NONE, MOVE, RESIZE };
+enum Mode { NONE, MOVE, RESIZE_TL, RESIZE_TR, RESIZE_BL, RESIZE_BR };
 Mode mode = NONE;
+
+// -------------------------------------------------
 
 void UpdateRegion(HWND hwnd)
 {
@@ -30,11 +32,31 @@ bool InHole(int x, int y)
            y > hole.top  && y < hole.bottom;
 }
 
-bool OnBorder(int x, int y)
+bool InCornerTL(int x, int y)
 {
-    return abs(x - hole.right) < BORDER ||
-           abs(y - hole.bottom) < BORDER;
+    return abs(x - hole.left) < CORNER &&
+           abs(y - hole.top)  < CORNER;
 }
+
+bool InCornerTR(int x, int y)
+{
+    return abs(x - hole.right) < CORNER &&
+           abs(y - hole.top)   < CORNER;
+}
+
+bool InCornerBL(int x, int y)
+{
+    return abs(x - hole.left)   < CORNER &&
+           abs(y - hole.bottom) < CORNER;
+}
+
+bool InCornerBR(int x, int y)
+{
+    return abs(x - hole.right)  < CORNER &&
+           abs(y - hole.bottom) < CORNER;
+}
+
+// -------------------------------------------------
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -44,12 +66,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             int x = GET_X_LPARAM(lParam);
             int y = GET_Y_LPARAM(lParam);
-
             last = { x, y };
 
-            if (OnBorder(x, y))
-                mode = RESIZE;
-            else if (InHole(x, y))
+            if (InCornerTL(x, y))      mode = RESIZE_TL;
+            else if (InCornerTR(x, y)) mode = RESIZE_TR;
+            else if (InCornerBL(x, y)) mode = RESIZE_BL;
+            else if (InCornerBR(x, y)) mode = RESIZE_BR;
+            else if ((GetKeyState(VK_CONTROL) & 0x8000) && InHole(x, y))
                 mode = MOVE;
             else
                 mode = NONE;
@@ -67,18 +90,36 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             {
                 int x = GET_X_LPARAM(lParam);
                 int y = GET_Y_LPARAM(lParam);
-
                 int dx = x - last.x;
                 int dy = y - last.y;
 
-                if (mode == MOVE)
+                switch (mode)
                 {
-                    OffsetRect(&hole, dx, dy);
-                }
-                else if (mode == RESIZE)
-                {
-                    hole.right += dx;
-                    hole.bottom += dy;
+                    case MOVE:
+                        OffsetRect(&hole, dx, dy);
+                        break;
+
+                    case RESIZE_TL:
+                        hole.left += dx;
+                        hole.top  += dy;
+                        break;
+
+                    case RESIZE_TR:
+                        hole.right += dx;
+                        hole.top   += dy;
+                        break;
+
+                    case RESIZE_BL:
+                        hole.left   += dx;
+                        hole.bottom += dy;
+                        break;
+
+                    case RESIZE_BR:
+                        hole.right  += dx;
+                        hole.bottom += dy;
+                        break;
+
+                    default: break;
                 }
 
                 last = { x, y };
@@ -113,26 +154,29 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+// -------------------------------------------------
+
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 {
     RECT work;
     SystemParametersInfo(SPI_GETWORKAREA, 0, &work, 0);
 
     WNDCLASS wc = {};
-    wc.lpfnWndProc = WndProc;
-    wc.hInstance = hInst;
-    wc.lpszClassName = "Spotlight";
+    wc.lpfnWndProc   = WndProc;
+    wc.hInstance     = hInst;
+    wc.lpszClassName = "SpotlightOverlay";
     wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 
     RegisterClass(&wc);
 
     HWND hwnd = CreateWindowEx(
-        WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
+        WS_EX_TOPMOST,
         wc.lpszClassName,
-        "",
+        "Spotlight",
         WS_POPUP,
-        work.left, work.top,
-        work.right - work.left,
+        work.left,
+        work.top,
+        work.right  - work.left,
         work.bottom - work.top,
         nullptr, nullptr, hInst, nullptr
     );
